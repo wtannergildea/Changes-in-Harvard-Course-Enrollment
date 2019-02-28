@@ -3,12 +3,22 @@ library(tidyverse)
 library(ggplot2)
 library(janitor)
 library(readxl)
+library(gt)
 
-enrollment_data_2019 <- read_excel("class_enrollment_summary_by_term_2.26.19.xlsx", skip = 3) %>% 
+download.file(url = "https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_2.28.19.xlsx",
+              destfile  = "~/Desktop/R.projects/class_2019-02-26/2019_data.xlsx",
+              mode = "wb")    
+
+download.file(url = "https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_03.06.18.xlsx",
+              destfile  = "~/Desktop/R.projects/class_2019-02-26/2018_data.xlsx",
+              mode = "wb")     
+
+
+enrollment_data_2019 <- read_excel("2019_data.xlsx", skip = 3) %>% 
   clean_names() %>% 
   filter(! is.na(course_name))
 
-enrollment_data_2018 <- read_excel("class_enrollment_summary_by_term_03.06.18.xlsx", skip = 3) %>% 
+enrollment_data_2018 <- read_excel("2018_data.xlsx", skip = 3) %>% 
   clean_names() %>% 
   filter(! is.na(course_name))
 
@@ -20,5 +30,16 @@ joined_enrollment <- left_join(enrollment_data_2018, enrollment_data_2019, by = 
   select(course_title.2018, course_name.2018, u_grad.2018, u_grad.2019, enrollment_difference) %>% 
   arrange(enrollment_difference) %>% 
   slice(1:10)
+
+gt(joined_enrollment) %>%
+  tab_header(
+    title = "Biggest Enrollment Decreases in Spring 2019") %>%
+  
+  cols_label(
+    course_title.2018 = "Course Title",
+    course_name.2018 = "Course Name",
+    u_grad.2018 = "2018",
+    u_grad.2019 = "2019",
+    enrollment_difference = "Change") 
 
 View(joined_enrollment)

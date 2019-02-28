@@ -1,30 +1,58 @@
 ---
-title: "class_2019-02-26"
+title: "Class Week 4"
 author: "Tanner Gildea"
 date: "2/26/2019"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE, echo = FALSE, results = "asis"}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+library(readxl)
+library(gt)
+
+download.file(url = "https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_2.28.19.xlsx",
+              destfile  = "~/Desktop/R.projects/class_2019-02-26/2019_data.xlsx",
+              mode = "wb")    
+
+download.file(url = "https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_03.06.18.xlsx",
+              destfile  = "~/Desktop/R.projects/class_2019-02-26/2018_data.xlsx",
+              mode = "wb")     
+
+
+enrollment_data_2019 <- read_excel("2019_data.xlsx", skip = 3) %>% 
+  clean_names() %>% 
+  filter(! is.na(course_name))
+
+enrollment_data_2018 <- read_excel("2018_data.xlsx", skip = 3) %>% 
+  clean_names() %>% 
+  filter(! is.na(course_name))
+
+# number, name, 2018 enrollment, 2019 enrollment, arrange(desc(change))
+
+joined_enrollment <- left_join(enrollment_data_2018, enrollment_data_2019, by = "course_id", suffix = c(".2018", ".2019")) %>% 
+  filter(! is.na(total.2019)) %>% 
+  mutate(enrollment_difference = (u_grad.2019 - u_grad.2018)) %>% 
+  select(course_title.2018, course_name.2018, u_grad.2018, u_grad.2019, enrollment_difference) %>% 
+  arrange(enrollment_difference) %>% 
+  slice(1:10)
+
 ```
 
-## R Markdown
+```{r table, echo = FALSE, results = "asis"}
+gt(joined_enrollment) %>%
+  tab_header(
+    title = "Biggest Enrollment Decreases in Spring 2019") %>%
+  
+  cols_label(
+    course_title.2018 = "Course Title",
+    course_name.2018 = "Course Name",
+    u_grad.2018 = "2018",
+    u_grad.2019 = "2019",
+    enrollment_difference = "Change") %>% 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+as_raw_html() %>% as.character() %>% cat()
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
