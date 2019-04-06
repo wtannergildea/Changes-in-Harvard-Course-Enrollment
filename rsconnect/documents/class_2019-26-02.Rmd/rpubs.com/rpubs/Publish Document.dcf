@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/471953/1b9a120ac9004a219caf60223784a7eb
+bundleId: https://api.rpubs.com/api/v1/document/471953/1b9a120ac9004a219caf60223784a7eb
+url: http://rpubs.com/wtannergildea/471953
+when: 1551382542.00037

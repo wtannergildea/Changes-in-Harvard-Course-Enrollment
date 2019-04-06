@@ -1,5 +1,5 @@
 ---
-title: "Class Week 4"
+title: "Harvard Course Enrollment Changes"
 author: "Tanner Gildea"
 date: "2/26/2019"
 output: html_document
@@ -30,6 +30,8 @@ enrollment_data_2018 <- read_excel("2018_data.xlsx", skip = 3) %>%
   clean_names() %>% 
   filter(! is.na(course_name))
 
+fs::file_delete(c("2019_data.xlsx", "2018_data.xlsx"))
+
 # number, name, 2018 enrollment, 2019 enrollment, arrange(desc(change))
 
 joined_enrollment <- left_join(enrollment_data_2018, enrollment_data_2019, by = "course_id", suffix = c(".2018", ".2019")) %>% 
@@ -56,3 +58,28 @@ gt(joined_enrollment) %>%
 as_raw_html() %>% as.character() %>% cat()
 
 ```
+
+
+
+
+# Largest New Classes Spring 2019
+
+
+``` {r next table, echo = FALSE, results = "asis"}
+enrollment_data_2019 %>% 
+  anti_join(enrollment_data_2018, by = "course_id") %>% 
+  select(course_title, course_name, u_grad) %>% 
+  arrange(desc(u_grad)) %>% 
+  slice(1:10) %>% 
+  
+  gt() %>% 
+  tab_header(
+    title = "Largest New Classes Spring 2019") %>%
+  
+  cols_label(
+    course_title = "Course Title",
+    course_name = "Course Name",
+    u_grad = "2019") %>% 
+  
+as_raw_html() %>% as.character() %>% cat()
+
