@@ -1,3 +1,3 @@
-# class_2019-02-26
+# Changes-in-Harvard-Course-Enrollment
 
-Course enrollments.
+Largest increases and decreases in Harvard undergraduate courses between 2018 and 2019.
